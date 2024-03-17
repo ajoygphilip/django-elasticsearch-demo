@@ -1,10 +1,11 @@
-# Import necessary modules
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
+
 from blog.models import Author, Blog
-import requests
 from icecream import ic
 from random import choice
+from faker import Faker
+from random import choice, randint
 
 
 # Define your command class
@@ -12,29 +13,39 @@ class Command(BaseCommand):
     help = "Populates Blog model with data from a web API"
 
     def handle(self, *args, **kwargs):
+        fake = Faker()
+        authors = Author.objects.all()
 
-        for id in range(1, 11):
-            url = f"https://api.slingacademy.com/v1/sample-data/blog-posts/{id}"
-            response = requests.get(url)
+        for _ in range(100):
 
-            if response.status_code == 200:
-                data = response.json()["blog"]
-                author = Author.objects.get(id=id)
+            paragraphs = []
+            num_sentences = randint(3, 6)
+            num_paras = randint(3, 5)
 
-                if Blog.objects.filter(title=data["title"]).first():
-                    ic(f"{data['title']} exist skipping")
-                    continue
+            for _ in range(num_paras):
+                sentences = []
+                for _ in range(num_sentences):
+                    sentence_length = randint(10, 20)
+                    sentence = fake.sentence(nb_words=sentence_length)
+                    sentences.append(sentence.strip())
+                paragraph = " ".join(sentences)
+                paragraphs.append(paragraph)
 
-                blog, created = Blog.objects.get_or_create(
-                    author=author,
-                    defaults={
-                        "title": data["title"],
-                        "description": data["description"],
-                        "category": data["category"],
-                        "content_text": data["content_text"],
-                        "content_html": data["content_html"],
-                    },
-                )
+            title = fake.sentence()[:-1]
+            category = fake.word()
+            description = fake.sentence()
+            content_text = "\n\n".join(paragraphs)
+            content_html = "".join([f"<p>{p}</p>" for p in paragraphs])
 
-                if blog:
-                    ic(f"{blog} created")
+            author = choice(authors)
+            blog = Blog.objects.create(
+                author=author,
+                title=title,
+                description=description,
+                category=category,
+                content_text=content_text,
+                content_html=content_html,
+            )
+            blog.save()
+            if blog:
+                ic(f"{blog} ")
