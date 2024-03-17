@@ -1,0 +1,12 @@
+.env
+*.pyc
+__pycache__/
+static/
+media/
+db.sqlite3
+.vscode/
+.idea/
+venv/
+Pipfile
+Pipfile.lock
+db.sqlite3-journal
