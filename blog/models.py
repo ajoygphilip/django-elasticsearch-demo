@@ -14,4 +14,21 @@ class Author(models.Model):
     job = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.user.username}'s profile"
+        return f"{self.first_name} {self.last_name}'s profile"
+
+
+from django.db import models
+
+
+class Blog(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    category = models.CharField(max_length=50)
+    content_text = models.TextField()
+    content_html = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
