@@ -2,7 +2,6 @@
 from django.core.management.base import BaseCommand
 import sys
 from icecream import ic
-from blog.documents import BlogDocument, AuthorDocument
 from django_elasticsearch_dsl.search import Search
 from elasticsearch_dsl import Q
 
